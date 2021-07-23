@@ -1,111 +1,111 @@
 
-# Fetch
+# Отримання
 
-JavaScript can send network requests to the server and load new information whenever it's needed.
+JavaScript може надсилати мережеві запити на сервер і завантажувати нову інформацію, коли це потрібно.
 
-For example, we can use a network request to:
+Наприклад, ми можемо використовувати мережевий запит для:
 
-- Submit an order,
-- Load user information,
-- Receive latest updates from the server,
-- ...etc.
+- Зробити замовлення,
+- Завантажити інформацію про користувача,
+- Отримувати останні оновлення від сервера,
+- …тощо.
 
-...And all of that without reloading the page!
+…І все це без перезавантаження сторінки!
 
-There's an umbrella term "AJAX" (abbreviated <b>A</b>synchronous <b>J</b>avaScript <b>A</b>nd <b>X</b>ML) for network requests from JavaScript. We don't have to use XML though: the term comes from old times, that's why that word is there. You may have heard that term already.
+Існує зонтичний термін “AJAX” (скорочення <b>A</b>synchronous <b>J</b>avaScript <b>A</b>nd <b>X</b>ML) для мережевих запитів від JavaScript. Однак нам не обов’язково використовувати XML: термін походить із давніх часів, тому там це слово є. Можливо, ви вже чули цей термін.
 
-There are multiple ways to send a network request and get information from the server.
+Існує декілька способів надіслати мережевий запит та отримати інформацію з сервера.
 
-The `fetch()` method is modern and versatile, so we'll start with it. It's not supported by old browsers (can be polyfilled), but very well supported among the modern ones.
+Метод `fetch ()` є сучасним та універсальним, тому ми почнемо з нього. Він не підтримується старими браузерами (можна поліфільнути), але дуже добре підтримується новими.
 
-The basic syntax is:
+Основний синтаксис:
 
 ```js
 let promise = fetch(url, [options])
 ```
 
-- **`url`** -- the URL to access.
-- **`options`** -- optional parameters: method, headers etc.
+- **`url`**  - URL-адреса для доступу.
+- **`options`** - необов'язкові параметри: метод, заголовки тощо.
 
-Without `options`, this is a simple GET request, downloading the contents of the `url`.
+Без `options` — це простий запит GET, що завантажує вміст `url`.
 
-The browser starts the request right away and returns a promise that the calling code should use to get the result.
+Браузер одразу запускає запит і повертає обіцянку, яку повинен використовувати код, що викликається для отримання результату.
 
-Getting a response is usually a two-stage process.
+Отримання відповіді — це, як правило, двоетапний процес.
 
-**First, the `promise`, returned by `fetch`, resolves with an object of the built-in [Response](https://fetch.spec.whatwg.org/#response-class) class as soon as the server responds with headers.**
+**По-перше, __обіцянка__, повернута функцією `fetch`, вирішується за допомогою об’єкта вбудованого класу [Response] (https://fetch.spec.whatwg.org/#response-class), як тільки сервер відповість заголовками.**
 
-At this stage we can check HTTP status, to see whether it is successful or not, check headers, but don't have the body yet.
+На цьому етапі ми можемо перевірити статус HTTP, щоб побачити його успішність чи ні, перевірити заголовки, але ще не маємо тіла.
 
-The promise rejects if the `fetch` was unable to make HTTP-request, e.g. network problems, or there's no such site. Abnormal HTTP-statuses, such as 404 or 500 do not cause an error.
+Обіцянка відхиляється, якщо `fetch` не зміг зробити HTTP-запит, наприклад проблеми з мережею, або такого сайту немає. Ненормальні статуси HTTP, такі як 404 або 500, не викликають помилок.
 
-We can see HTTP-status in response properties:
+Ми можемо побачити статус HTTP у властивостях відповіді:
 
-- **`status`** -- HTTP status code, e.g. 200.
-- **`ok`** -- boolean, `true` if the HTTP status code is 200-299.
+- **`status`** - код стану HTTP, напр. 200.
+- **`ok`** - логічне значення, `true` (так), якщо код стану HTTP в діапазоні 200-299.
 
-For example:
+Наприклад:
 
 ```js
 let response = await fetch(url);
 
-if (response.ok) { // if HTTP-status is 200-299
-  // get the response body (the method explained below)
+if (response.ok) { // якщо статус HTTP в межах 200-299
+  // отримуємо тіло відповіді (метод, пояснений нижче)
   let json = await response.json();
 } else {
-  alert("HTTP-Error: " + response.status);
+  alert("Помилка HTTP: " + response.status);
 }
 ```
 
-**Second, to get the response body, we need to use an additional method call.**
+**По-друге, щоб отримати тіло відповіді, нам потрібно використовувати додатковий виклик методу.**
 
-`Response` provides multiple promise-based methods to access the body in various formats:
+`Response` надає безліч методів, заснованих на обіцянках, для доступу до тіла в різних форматах:
 
-- **`response.text()`** -- read the response and return as text,
-- **`response.json()`** -- parse the response as JSON,
-- **`response.formData()`** -- return the response as `FormData` object (explained in the [next chapter](info:formdata)),
-- **`response.blob()`** -- return the response as [Blob](info:blob) (binary data with type),
-- **`response.arrayBuffer()`** -- return the response as [ArrayBuffer](info:arraybuffer-binary-arrays) (low-level representation of binary data),
-- additionally, `response.body` is a [ReadableStream](https://streams.spec.whatwg.org/#rs-class) object, it allows you to read the body chunk-by-chunk, we'll see an example later.
+- **`response.text()`** - прочитати відповідь і повернути як текст,
+- **`response.json()`** - розібрати відповідь як JSON,
+- **`response.formData()`** - повернути відповідь як об’єкт `FormData` (пояснено в [наступному розділі](info:formdata)),
+- **`response.blob()`** - повернути відповідь як [Блоб](info:blob) (двійкові дані з типом),
+- **`response.arrayBuffer()`** - повернути відповідь як [Двійковий масив](info:arraybuffer-binary-arrays) (низькорівневе представлення двійкових даних),
+- крім того, `response.body` є об’єктом [ReadableStream](https://streams.spec.whatwg.org/#rs-class) — він дозволяє вам читати тіло по частинах, як ми побачимо пізніше на прикладі.
 
-For instance, let's get a JSON-object with latest commits from GitHub:
+Наприклад, давайте отримаємо JSON-об'єкт із останніми комітами від GitHub:
 
 ```js run async
-let url = 'https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits';
+let url = 'https://api.github.com/repos/javascript-tutorial/uk.javascript.info/commits';
 let response = await fetch(url);
 
 *!*
-let commits = await response.json(); // read response body and parse as JSON
+let commits = await response.json(); // читаємо тіло відповіді та розбираємо як JSON
 */!*
 
 alert(commits[0].author.login);
 ```
 
-Or, the same without `await`, using pure promises syntax:
+Або те саме без `await`, використовуючи синтаксис чистих обіцянок:
 
 ```js run
-fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits')
+fetch('https://api.github.com/repos/javascript-tutorial/uk.javascript.info/commits')
   .then(response => response.json())
   .then(commits => alert(commits[0].author.login));
 ```
 
-To get the response text, `await response.text()` instead of `.json()`:
+Щоб отримати текст відповіді, `await response.text ()` замість `.json ()`:
 
 ```js run async
-let response = await fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits');
+let response = await fetch('https://api.github.com/repos/javascript-tutorial/uk.javascript.info/commits');
 
-let text = await response.text(); // read response body as text
+let text = await response.text(); // читаємо тіло відповіді як текст
 
 alert(text.slice(0, 80) + '...');
 ```
 
-As a show-case for reading in binary format, let's fetch and show a logo image of ["fetch" specification](https://fetch.spec.whatwg.org) (see chapter [Blob](info:blob) for details about operations on `Blob`):
+Як показовий приклад для читання у двійковому форматі, давайте дістанемо та покажемо зображення логотипу із [специфікації “fetch”] (https://fetch.spec.whatwg.org) (див. розділ [Блоб](info:blob) для подробиць щодо операцій на `Blob`):
 
 ```js async run
 let response = await fetch('/article/fetch/logo-fetch.svg');
 
 *!*
-let blob = await response.blob(); // download as Blob object
+let blob = await response.blob(); // завантажити як об’єкт Blob
 */!*
 
 // create <img> for it
@@ -116,24 +116,24 @@ document.body.append(img);
 // show it
 img.src = URL.createObjectURL(blob);
 
-setTimeout(() => { // hide after three seconds
+setTimeout(() => { // приховати через три секунди
   img.remove();
   URL.revokeObjectURL(img.src);
 }, 3000);
 ```
 
 ````warn
-We can choose only one body-reading method.
+Ми можемо вибрати лише один метод читання тіла.
 
-If we've already got the response with `response.text()`, then `response.json()` won't work, as the body content has already been processed.
+Якщо ми вже отримали відповідь з `response.text()`, тоді `response.json()` не буде працювати, оскільки вміст основного тексту вже оброблений
 
 ```js
-let text = await response.text(); // response body consumed
-let parsed = await response.json(); // fails (already consumed)
+let text = await response.text(); // споживане тіло відповіді
+let parsed = await response.json(); // не вдалося (вже спожито)
 ```
 ````
 
-## Response headers
+## Заголовки відповідей
 
 The response headers are available in a Map-like headers object in `response.headers`.
 
